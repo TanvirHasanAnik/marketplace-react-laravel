@@ -70,7 +70,20 @@
   padding: 20px;
 }
 
+button {
+  outline: none;
+  border: none;
+  cursor: pointer;
+}
+
+button:focus,
+button:active {
+  outline: none;
+  box-shadow: none; /* some browsers add glow instead of outline */
+}
+
 .sidebar button {
+  outline: none;
   display: block;
   margin: 10px 0;
   width: 100%;

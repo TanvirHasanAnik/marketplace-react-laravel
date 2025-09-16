@@ -43,8 +43,9 @@ export default function ManageProducts({ setSelectedProduct, setView }) {
   };
 
   return (
-    <div>
-      <p style={{ textAlign: "left", margin: "15px" }}>Manage Products</p>
+    <div style={{display: "flex", flexDirection: "column", alignItems: "start"}}>
+      <p style={{ textAlign: "left" }}>Manage Products</p>
+      <button style={{marginBottom: "15px", color: "#1bac02ff"}}>Add New Product</button>
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
           <tr style={{ backgroundColor: "#696969ff" }}>
@@ -67,9 +68,9 @@ export default function ManageProducts({ setSelectedProduct, setView }) {
               <td style={{ border: "1px solid #ddd", padding: "8px" }}>${product.price}</td>
               <td style={{ border: "1px solid #ddd", padding: "8px" }}>{product.stock}</td>
               <td style={{ border: "1px solid #ddd", padding: "8px" }}>
-                <button onClick={() => { setSelectedProduct(product); setView("detail"); }}>View</button>
-                <button onClick={() => { setSelectedProduct(product); setView("edit"); }} style={{ marginLeft: "5px" }}>Edit</button>
-                <button onClick={() => { handleDelete(product)}} style={{ marginLeft: "5px" }}>Delete</button>
+                <button style={{marginBottom: "15px", color: "#329ebaff"}} onClick={() => { setSelectedProduct(product); setView("detail"); }}>View</button>
+                <button onClick={() => { setSelectedProduct(product); setView("edit"); }} style={{ marginLeft: "5px", color: "#a96a2bff"}}>Edit</button>
+                <button onClick={() => { handleDelete(product)}} style={{ marginLeft: "5px",color: "#cb0101ff" }}>Delete</button>
               </td>
             </tr>
           ))}
