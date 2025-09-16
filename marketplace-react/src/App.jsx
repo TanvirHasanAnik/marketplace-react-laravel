@@ -4,10 +4,11 @@ import ProductDetail from "./components/ProductDetail";
 import ProductForm from "./components/ProductForm";
 import ProductList from "./components/ProductList";
 import Sidebar from "./components/Sidebar";
+import ManageProducts from './components/manageProducts';
 
 function App() {
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [view, setView] = useState("list"); 
+  const [view, setView] = useState("all_products"); 
 
   return (
     <div className="app-container">
@@ -18,9 +19,15 @@ function App() {
         <div className='content'>
           <Sidebar setView={setView} />
           <div className="main-content">
-            {view === "list" && (
+            {view === "all_products" && (
               <ProductList setSelectedProduct={setSelectedProduct} setView={setView} />
             )}
+            
+            {view === "manage_products" && (
+              <ManageProducts setSelectedProduct={setSelectedProduct} setView={setView} />
+            )}
+
+
             {view === "detail" && (
               <ProductDetail product={selectedProduct} setView={setView} />
             )}
