@@ -44,7 +44,7 @@ export default function ManageProducts({ setSelectedProduct, setView }) {
 
   return (
     <div>
-      <p style={{ textAlign: "left", margin: "15px" }}>Products</p>
+      <p style={{ textAlign: "left", margin: "15px" }}>Manage Products</p>
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
           <tr style={{ backgroundColor: "#696969ff" }}>

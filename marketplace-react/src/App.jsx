@@ -17,7 +17,7 @@ function App() {
           <h3>Cart</h3>
         </div>
         <div className='content'>
-          <Sidebar setView={setView} />
+          <Sidebar setView={setView} currentView={view} />
           <div className="main-content">
             {view === "all_products" && (
               <ProductList setSelectedProduct={setSelectedProduct} setView={setView} />
