@@ -12,7 +12,24 @@ class SubcategorySeeder extends Seeder
      */
     public function run(): void
     {
-        Subcategory::create(['name' => 'MacBooks', 'category_id' => 1]);
-        Subcategory::create(['name' => 'iPhones', 'category_id' => 2]);
+        // Laptops
+        Subcategory::updateOrCreate(['name' => 'MacBooks', 'category_id' => 1]);
+        Subcategory::updateOrCreate(['name' => 'Gaming Laptops', 'category_id' => 1]);
+
+        // Phones
+        Subcategory::updateOrCreate(['name' => 'iPhones', 'category_id' => 2]);
+        Subcategory::updateOrCreate(['name' => 'Android Phones', 'category_id' => 2]);
+
+        // Tablets
+        Subcategory::updateOrCreate(['name' => 'iPads', 'category_id' => 3]);
+        Subcategory::updateOrCreate(['name' => 'Android Tablets', 'category_id' => 3]);
+
+        // Accessories
+        Subcategory::updateOrCreate(['name' => 'Headphones', 'category_id' => 4]);
+        Subcategory::updateOrCreate(['name' => 'Chargers', 'category_id' => 4]);
+
+        // Wearables
+        Subcategory::updateOrCreate(['name' => 'Smart Watches', 'category_id' => 5]);
+        Subcategory::updateOrCreate(['name' => 'Fitness Bands', 'category_id' => 5]);
     }
 }

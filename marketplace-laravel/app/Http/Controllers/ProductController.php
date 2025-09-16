@@ -10,7 +10,7 @@ class ProductController extends Controller
     // List all products
     public function index()
     {
-        $products = Product::with(['category', 'subcategory', 'vendor'])->get();
+        $products = Product::with(['category', 'subcategory', 'vendor'])->paginate(10);
         return response()->json($products, 200);
     }
 
