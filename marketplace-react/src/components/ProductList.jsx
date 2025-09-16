@@ -24,7 +24,7 @@ export default function ProductList({ setSelectedProduct, setView }) {
 
   return (
     <div>
-      <h2>Products</h2>
+      <p style={{ textAlign: "left", margin: "15px" }}>Products</p>
       <div className="product-list">
         {products.map(p => (
           <ProductCard product={p} setSelectedProduct={setSelectedProduct} setView={setView}/>
