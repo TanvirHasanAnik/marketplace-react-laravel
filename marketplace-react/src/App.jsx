@@ -1,4 +1,5 @@
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import cartIcon from "../src/assets/shopping-cart.svg";
 import "./App.css";
 import Sidebar from "./components/Sidebar";
 import routes from "./routes";
@@ -11,8 +12,8 @@ function App() {
           <div style={{marginLeft: "15px"}}>
             <h3>Marketplace</h3>
           </div>
-          <div style={{marginRight: "15px"}}>
-            <h3>Cart</h3>
+          <div style={{ marginRight: "15px", display: "flex", alignItems: "center", gap: "6px" }}>
+            <img src={cartIcon} alt="Cart" style={{ width: "40px", height: "40px" }} />
           </div>
         </div>
 
