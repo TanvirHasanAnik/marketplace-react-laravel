@@ -145,4 +145,47 @@ button:active {
   margin: 8px 0;
   padding: 10px;
   width: 100%;
+  border-radius: 8px;
+  border: none;
 }
+
+.select-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.select-row select {
+  flex: 1;
+  padding: 10px 12px;
+  font-size: 1rem;
+  border: 1px solid #555;
+  border-radius: 8px;
+  appearance: none;
+  background-color: #1e1e2f; /* dark background */
+  color: #eee; /* light text */
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 140 140' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='20,50 70,100 120,50' stroke='%23ccc' stroke-width='20' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px 16px;
+}
+
+.select-row select:focus {
+  border-color: #646cff;
+  box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.2);
+  outline: none;
+}
+
+.select-row select option {
+  background-color: #1e1e2f; /* keep dropdown dark */
+  color: #eee;
+}
+
+.select-row select option:first-child {
+  color: #aaa; /* placeholder option slightly lighter */
+}
+
+

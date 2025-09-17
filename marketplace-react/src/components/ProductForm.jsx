@@ -136,30 +136,32 @@ export default function ProductForm({ isEdit }) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="product-form">
-      <h2>{isEdit ? "Edit Product" : "Add Product"}</h2>
+      <h4 style={{textAlign: "left"}}>{isEdit ? "Edit Product" : "Add Product"}</h4>
       {errors.vendor_id && <p style={{ color: "red" }}>{errors.vendor_id.message}</p>}
 
-      {/* Category select */}
-      <select {...register("category_id", { valueAsNumber: true })}>
-        <option value={0}>Select Category</option>
-        {categories.map((cat) => (
-          <option key={cat.id} value={cat.id}>
-            {cat.name}
-          </option>
-        ))}
-      </select>
-      {errors.category_id && <p style={{ color: "red" }}>{errors.category_id.message}</p>}
+      <div className="select-row">
+        {/* Category select */}
+        <select style={{}} {...register("category_id", { valueAsNumber: true })}>
+          <option value={0}>Select Category</option>
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.name}
+            </option>
+          ))}
+        </select>
+        {errors.category_id && <p style={{ color: "red" }}>{errors.category_id.message}</p>}
 
-      {/* Subcategory select */}
-      <select {...register("subcategory_id", { valueAsNumber: true })}>
-        <option value="">Select Subcategory (optional)</option>
-        {subcategories.map((sub) => (
-          <option key={sub.id} value={sub.id}>
-            {sub.name}
-          </option>
-        ))}
-      </select>
-      {errors.subcategory_id && <p style={{ color: "red" }}>{errors.subcategory_id.message}</p>}
+        {/* Subcategory select */}
+        <select {...register("subcategory_id", { valueAsNumber: true })}>
+          <option value="">Select Subcategory (optional)</option>
+          {subcategories.map((sub) => (
+            <option key={sub.id} value={sub.id}>
+              {sub.name}
+            </option>
+          ))}
+        </select>
+        {errors.subcategory_id && <p style={{ color: "red" }}>{errors.subcategory_id.message}</p>}
+      </div>
 
       <input type="text" placeholder="Product Name" {...register("name")} />
       {errors.name && <p style={{ color: "red" }}>{errors.name.message}</p>}
