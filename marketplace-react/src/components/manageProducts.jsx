@@ -64,8 +64,8 @@ export default function ManageProducts() {
               <td>${product.price}</td>
               <td>{product.stock}</td>
               <td>
-                <button onClick={() => navigate(`/manage/${product.id}`)}>View</button>
-                <button onClick={() => navigate(`/manage/edit/${product.id}`)} style={{ marginLeft: "5px" }}>Edit</button>
+                <button onClick={() => navigate(`/manage/${product.id}`)} style={{ marginLeft: "5px", marginBottom:"5px",marginTop:"5px",color: '#0685d4ff' }}>View</button>
+                <button onClick={() => navigate(`/manage/edit/${product.id}`)} style={{ marginLeft: "5px", color: "orange" }}>Edit</button>
                 <button onClick={() => handleDelete(product)} style={{ marginLeft: "5px", color: "red" }}>Delete</button>
               </td>
             </tr>
