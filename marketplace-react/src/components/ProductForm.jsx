@@ -18,12 +18,25 @@ const productSchema = z.object({
   name: z.string().min(1, "Product name is required"),
   description: z.string().optional(),
   price: z
-    .number({ invalid_type_error: "Price must be a number" })
-    .min(0, "Price must be at least 0"),
+    .string()
+    .min(1, "Price must be given")
+    .transform((val) => (val === "" ? undefined : Number(val)))
+    .refine((val) => typeof val === "number" && !isNaN(val), {
+      message: "Price must be given",
+    })
+    .refine((val) => val >= 0, {
+      message: "Price must be at least 0",
+    }),
   stock: z
-    .number({ invalid_type_error: "Stock must be a number" })
-    .int()
-    .min(0, "Stock cannot be negative"),
+    .string()
+    .min(1, "Stock must be given")
+    .transform((val) => (val === "" ? undefined : Number(val)))
+    .refine((val) => typeof val === "number" && !isNaN(val), {
+      message: "Stock must be given",
+    })
+    .refine((val) => Number.isInteger(val) && val >= 0, {
+      message: "Stock cannot be negative",
+    }),
 });
 
 export default function ProductForm({ isEdit }) {
@@ -46,8 +59,8 @@ export default function ProductForm({ isEdit }) {
       subcategory_id: null,
       name: "",
       description: "",
-      price: 0,
-      stock: 0,
+      price: "",
+      stock: "",
     },
   });
 
@@ -83,8 +96,8 @@ export default function ProductForm({ isEdit }) {
           setValue("subcategory_id", data.subcategory_id || null);
           setValue("name", data.name || "");
           setValue("description", data.description || "");
-          setValue("price", data.price || 0);
-          setValue("stock", data.stock || 0);
+          setValue("price", data.price?.toString() || "");
+          setValue("stock", data.stock?.toString() || "");
         });
     }
   }, [isEdit, id, setValue]);
@@ -95,11 +108,18 @@ export default function ProductForm({ isEdit }) {
       ? `http://127.0.0.1:8000/api/products/${id}`
       : "http://127.0.0.1:8000/api/products";
 
+    // Convert price and stock to numbers for the API
+    const payload = {
+      ...formData,
+      price: Number(formData.price),
+      stock: Number(formData.stock),
+    };
+
     try {
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
@@ -147,10 +167,10 @@ export default function ProductForm({ isEdit }) {
       <textarea placeholder="Description" {...register("description")} />
       {errors.description && <p style={{ color: "red" }}>{errors.description.message}</p>}
 
-      <input type="number" placeholder="Price" {...register("price", { valueAsNumber: true })} />
+      <input type="text" placeholder="Price" {...register("price")} />
       {errors.price && <p style={{ color: "red" }}>{errors.price.message}</p>}
 
-      <input type="number" placeholder="Stock" {...register("stock", { valueAsNumber: true })} />
+      <input type="text" placeholder="Stock" {...register("stock")} />
       {errors.stock && <p style={{ color: "red" }}>{errors.stock.message}</p>}
 
       <button type="submit" style={{ margin: "20px" }}>
