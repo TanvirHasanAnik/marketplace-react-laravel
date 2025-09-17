@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import * as z from "zod";
+import '../App.css';
 
 // Zod schema
 const productSchema = z.object({
@@ -136,7 +137,7 @@ export default function ProductForm({ isEdit }) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="product-form">
+    <form onSubmit={handleSubmit(onSubmit)} className="product-form" style={{ textAlign: "left" }}>
       <h4 style={{textAlign: "left"}}>{isEdit ? "Edit Product" : "Add Product"}</h4>
       {errors.vendor_id && <p style={{ color: "red" }}>{errors.vendor_id.message}</p>}
 
@@ -164,19 +165,23 @@ export default function ProductForm({ isEdit }) {
         {errors.subcategory_id && <p style={{ color: "red" }}>{errors.subcategory_id.message}</p>}
       </div>
 
+      <label>Product Name</label>
       <input type="text" placeholder="Product Name" {...register("name")} />
       {errors.name && <p style={{ color: "red" }}>{errors.name.message}</p>}
 
+      <label>Description</label>
       <textarea placeholder="Description" {...register("description")} />
       {errors.description && <p style={{ color: "red" }}>{errors.description.message}</p>}
 
+      <label>Price</label>
       <input type="text" placeholder="Price" {...register("price")} />
       {errors.price && <p style={{ color: "red" }}>{errors.price.message}</p>}
 
+      <label>Stock</label>
       <input type="text" placeholder="Stock" {...register("stock")} />
       {errors.stock && <p style={{ color: "red" }}>{errors.stock.message}</p>}
 
-      <button type="submit" style={{ margin: "20px" }}>
+      <button type="submit" style={{ marginTop: "20px" }}>
         {isEdit ? "Update" : "Add"}
       </button>
     </form>
