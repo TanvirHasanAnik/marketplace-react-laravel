@@ -12,7 +12,9 @@ class ProductController extends Controller
     // List all products with pagination
     public function index()
     {
-        $products = Product::with(['category', 'subcategory', 'vendor', 'images'])->paginate(10);
+        $products = Product::with(['category', 'subcategory', 'vendor', 'images'])
+        ->orderBy('created_at', 'desc') // Latest first
+        ->paginate(10);
 
         // Add full URL to images
         $products->getCollection()->transform(function ($product) {

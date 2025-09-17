@@ -8,8 +8,12 @@ function App() {
     <Router>
       <div className="app-container">
         <div className="top-bar">
-          <h3>Marketplace</h3>
-          <h3>Cart</h3>
+          <div style={{marginLeft: "15px"}}>
+            <h3>Marketplace</h3>
+          </div>
+          <div style={{marginRight: "15px"}}>
+            <h3>Cart</h3>
+          </div>
         </div>
 
         <div className="content">
@@ -23,6 +27,9 @@ function App() {
           </div>
         </div>
       </div>
+      <footer>
+        <p>©S. M. Tanvir Hassan Anik</p>
+      </footer>
     </Router>
   );
 }

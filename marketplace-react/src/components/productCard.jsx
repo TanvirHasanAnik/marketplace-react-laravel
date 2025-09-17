@@ -20,8 +20,8 @@ export default function ProductCard({ product}) {
       <div className="product-info">
         <h3 className="product-title" style={{ color: "black" }}>{product.name}</h3>
         <div className="product-category-price-wrapper">
-          <p className="product-category" style={{ color: "#464544ff" }}>{product.category?.name || "No Category"}</p>
-          <p className="product-price" style={{ color: "green" }}>{product.price} BDT</p>
+          <p className="product-category" style={{ color: "#515150ff" }}>{product.category?.name || "No Category"}</p>
+          <p className="product-price" style={{ color: "#0d9101ff" }}>{product.price} BDT</p>
         </div>
       </div>
     </div>
