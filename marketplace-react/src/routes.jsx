@@ -1,4 +1,4 @@
-import ManageProducts from "./components/ManageProducts";
+import ManageProducts from "./components/manageProducts";
 import ProductDetail from "./components/ProductDetail";
 import ProductForm from "./components/ProductForm";
 import ProductList from "./components/ProductList";
