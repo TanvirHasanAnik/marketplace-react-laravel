@@ -1,15 +1,30 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
-export default function ProductForm({ setView, product, isEdit }) {
-  const [name, setName] = useState(product?.name || "");
-  const [price, setPrice] = useState(product?.price || "");
-  const [description, setDescription] = useState(product?.description || "");
+export default function ProductForm({ isEdit }) {
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+  const [description, setDescription] = useState("");
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isEdit && id) {
+      fetch(`http://127.0.0.1:8000/api/products/${id}`)
+        .then(res => res.json())
+        .then(data => {
+          setName(data.name || "");
+          setPrice(data.price || "");
+          setDescription(data.description || "");
+        });
+    }
+  }, [isEdit, id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const method = isEdit ? "PUT" : "POST";
     const url = isEdit
-      ? `http://127.0.0.1:8000/api/products/${product.id}`
+      ? `http://127.0.0.1:8000/api/products/${id}`
       : "http://127.0.0.1:8000/api/products";
 
     try {
@@ -21,34 +36,13 @@ export default function ProductForm({ setView, product, isEdit }) {
 
       if (response.ok) {
         alert(`Product ${isEdit ? "updated" : "added"} successfully!`);
-        setView("manage_products");
+        navigate("/manage");
       } else {
         alert("Failed to save the product.");
       }
     } catch (err) {
       console.error(err);
       alert("An error occurred while saving the product.");
-    }
-  };
-
-  const handleDelete = async () => {
-    const confirmed = window.confirm(`Are you sure you want to delete "${product.name}"?`);
-    if (!confirmed) return;
-
-    try {
-      const response = await fetch(`http://127.0.0.1:8000/api/products/${product.id}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        alert(`Product "${product.name}" deleted successfully!`);
-        setView("manage_products");
-      } else {
-        alert("Failed to delete the product.");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("An error occurred while deleting the product.");
     }
   };
 
@@ -77,11 +71,6 @@ export default function ProductForm({ setView, product, isEdit }) {
       <button type="submit" style={{ margin: "20px" }}>
         {isEdit ? "Update" : "Add"}
       </button>
-      {isEdit && (
-        <button type="button" onClick={handleDelete} style={{ marginLeft: "10px" }}>
-          Delete
-        </button>
-      )}
     </form>
   );
 }

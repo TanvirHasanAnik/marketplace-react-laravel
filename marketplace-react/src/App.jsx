@@ -1,45 +1,30 @@
-import { useState } from 'react';
-import './App.css';
-import ProductDetail from "./components/ProductDetail";
-import ProductForm from "./components/ProductForm";
-import ProductList from "./components/ProductList";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import "./App.css";
 import Sidebar from "./components/Sidebar";
-import ManageProducts from './components/manageProducts';
+import routes from "./routes";
 
 function App() {
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [view, setView] = useState("all_products"); 
-
   return (
-    <div className="app-container">
-        <div className='top-bar'>
+    <Router>
+      <div className="app-container">
+        <div className="top-bar">
           <h3>Marketplace</h3>
           <h3>Cart</h3>
         </div>
-        <div className='content'>
-          <Sidebar setView={setView} currentView={view} />
+
+        <div className="content">
+          <Sidebar />
           <div className="main-content">
-            {view === "all_products" && (
-              <ProductList setSelectedProduct={setSelectedProduct} setView={setView} />
-            )}
-            
-            {view === "manage_products" && (
-              <ManageProducts setSelectedProduct={setSelectedProduct} setView={setView} />
-            )}
-
-
-            {view === "detail" && (
-              <ProductDetail product={selectedProduct} setView={setView} />
-            )}
-            {view === "form" && <ProductForm setView={setView} />}
-            {view === "edit" && (
-              <ProductForm setView={setView} product={selectedProduct} isEdit />
-            )}
+            <Routes>
+              {routes.map((route, index) => (
+                <Route key={index} path={route.path} element={route.element} />
+              ))}
+            </Routes>
           </div>
-
+        </div>
       </div>
-    </div>
+    </Router>
   );
 }
 
-export default App
+export default App;
