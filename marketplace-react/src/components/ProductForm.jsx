@@ -105,14 +105,15 @@ export default function ProductForm({ isEdit }) {
   const onSubmit = async (formData) => {
     const method = isEdit ? "PUT" : "POST";
     const url = isEdit
-      ? `http://127.0.0.1:8000/api/products/${id}`
-      : "http://127.0.0.1:8000/api/products";
+      ? `/api/products/${id}`
+      : "/api/products";
 
     // Convert price and stock to numbers for the API
     const payload = {
       ...formData,
       price: Number(formData.price),
       stock: Number(formData.stock),
+      vendor_id: 1
     };
 
     try {
