@@ -75,7 +75,7 @@ export default function ManageProducts() {
               <td>{product.name}</td>
               <td>{product.category?.name || "N/A"}</td>
               <td>{product.subcategory?.name || "N/A"}</td>
-              <td>${product.price}</td>
+              <td>{product.price} BDT</td>
               <td>{product.stock}</td>
               <td>
                 <button 

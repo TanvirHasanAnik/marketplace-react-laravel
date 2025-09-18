@@ -27,10 +27,18 @@ export default function RegisterPage() {
 
   const onSubmit = async (data) => {
     try {
+      // 1️⃣ Ensure CSRF cookie is set first
+      await fetch("/sanctum/csrf-cookie", {
+        method: "GET",
+        credentials: "include", // very important
+      });
+
+      // 2️⃣ Register the user
       const response = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
+        credentials: "include", // include cookies
       });
 
       const result = await response.json();
@@ -39,6 +47,7 @@ export default function RegisterPage() {
         setApiResponse({ success: true, message: "Registration successful!", data: result });
         console.log("Success:", result);
 
+        // 3️⃣ Save token in localStorage
         if (result.access_token && result.user) {
           localStorage.setItem("authToken", result.access_token);
           localStorage.setItem("userId", result.user.id);
@@ -48,6 +57,10 @@ export default function RegisterPage() {
           setRole(result.user.role);
         }
 
+        // 4️⃣ Optionally, wait a tiny bit to ensure Sanctum cookie is usable
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        // 5️⃣ Navigate to homepage or dashboard
         navigate("/");
       } else {
         setApiResponse({ success: false, message: result.message || "Registration failed" });
@@ -87,14 +100,12 @@ export default function RegisterPage() {
           {errors.password_confirmation && <p className="error">{errors.password_confirmation.message}</p>}
         </div>
 
-        <button type="submit" className="login-button">
-          Register
-        </button>
+        <button type="submit" className="login-button">Register</button>
       </form>
 
-      <p 
-        onClick={() => navigate('/auth/login')}
-        style={{ color: '#00798fff', cursor: 'pointer', textDecoration: 'underline' }}
+      <p
+        onClick={() => navigate("/auth/login")}
+        style={{ color: "#00798fff", cursor: "pointer", textDecoration: "underline" }}
       >
         Already have an account? Login
       </p>

@@ -23,11 +23,15 @@ export default function ProductForm({ isEdit }) {
   const [subcategories, setSubcategories] = useState([]);
   const [allSubcategories, setAllSubcategories] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
+  const [loading, setLoading] = useState(true); 
+
+  // Get auth token
+  const authToken = localStorage.getItem("authToken");
 
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm({
     resolver: zodResolver(productSchema),
     defaultValues: {
-      category_id: 0,
+      category_id: null,
       subcategory_id: null,
       name: "",
       description: "",
@@ -40,7 +44,7 @@ export default function ProductForm({ isEdit }) {
   const selectedCategory = watch("category_id");
   const watchedImages = watch("images");
 
-  // Update previews when images change
+  // Update image previews
   useEffect(() => {
     if (watchedImages && watchedImages.length > 0) {
       const urls = Array.from(watchedImages).map(file => URL.createObjectURL(file));
@@ -52,16 +56,13 @@ export default function ProductForm({ isEdit }) {
 
   // Fetch categories and subcategories
   useEffect(() => {
-    fetch("/api/categories")
-      .then(res => res.json())
-      .then(data => setCategories(data));
-
-    fetch("/api/subcategories")
-      .then(res => res.json())
-      .then(data => setAllSubcategories(data));
+    Promise.all([
+      fetch("/api/categories").then(res => res.json()).then(data => setCategories(data)),
+      fetch("/api/subcategories").then(res => res.json()).then(data => setAllSubcategories(data))
+    ]).finally(() => setLoading(false));
   }, []);
 
-  // Filter subcategories
+  // Filter subcategories based on selected category
   useEffect(() => {
     const filtered = allSubcategories.filter(sub => sub.category_id === Number(selectedCategory));
     setSubcategories(filtered);
@@ -74,13 +75,12 @@ export default function ProductForm({ isEdit }) {
       fetch(`/api/products/${id}`)
         .then(res => res.json())
         .then(data => {
-          setValue("category_id", data.category_id || 0);
+          setValue("category_id", data.category_id || null);
           setValue("subcategory_id", data.subcategory_id || null);
           setValue("name", data.name || "");
           setValue("description", data.description || "");
           setValue("price", data.price?.toString() || "");
           setValue("stock", data.stock?.toString() || "");
-          // For edit, optionally handle existing images
           if (data.images && data.images.length > 0) {
             setPreviewImages(data.images.map(img => img.url));
           }
@@ -88,19 +88,18 @@ export default function ProductForm({ isEdit }) {
     }
   }, [isEdit, id, setValue]);
 
+  // Submit handler
   const onSubmit = async (formData) => {
+    if (!authToken) return alert("You are not logged in.");
+
     const method = isEdit ? "PUT" : "POST";
     const url = isEdit ? `/api/products/${id}` : "/api/products";
-
-    const authToken = localStorage.getItem("authToken");
-    if (!authToken) return alert("You are not logged in.");
 
     const payload = new FormData();
     payload.append("name", formData.name);
     payload.append("description", formData.description || "");
     payload.append("price", formData.price);
     payload.append("stock", formData.stock);
-    payload.append("vendor_id", 1); // adjust if needed
     payload.append("category_id", formData.category_id);
     if (formData.subcategory_id) payload.append("subcategory_id", formData.subcategory_id);
 
@@ -130,13 +129,17 @@ export default function ProductForm({ isEdit }) {
     }
   };
 
+  // Conditional rendering inside JSX (no conditional hooks)
+  if (!authToken) return <p>Please log in first to add a product.</p>;
+  if (loading) return <p>Loading form...</p>;
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="product-form" style={{ textAlign: "left" }}>
       <h4>{isEdit ? "Edit Product" : "Add Product"}</h4>
 
       <div className="select-row">
-        <select {...register("category_id", { valueAsNumber: true })}>
-          <option value={0}>Select Category</option>
+        <select {...register("category_id", { valueAsNumber: true })} required>
+          <option value="">Select Category</option>
           {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
         </select>
         {errors.category_id && <p style={{ color: "red" }}>{errors.category_id.message}</p>}
@@ -169,7 +172,6 @@ export default function ProductForm({ isEdit }) {
         onChange={(e) => setValue("images", e.target.files)}
       />
 
-      {/* Preview selected images */}
       {previewImages.length > 0 && (
         <div className="image-preview">
           {previewImages.map((src, idx) => (

@@ -14,7 +14,8 @@ const loginSchema = z.object({
 export default function LoginPage() {
   const { setRole } = useRole();
   const navigate = useNavigate();
-  const [apiResponse, setApiResponse] = useState(null); 
+  const [apiResponse, setApiResponse] = useState(null);
+
   const {
     register,
     handleSubmit,
@@ -25,12 +26,18 @@ export default function LoginPage() {
 
   const onSubmit = async (data) => {
     try {
+      // 1. Get CSRF cookie before login
+      await fetch("/sanctum/csrf-cookie", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      // 2. Send login request
       const response = await fetch("/api/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data), 
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        credentials: "include",
       });
 
       const result = await response.json();
@@ -40,13 +47,14 @@ export default function LoginPage() {
         console.log("Success:", result);
 
         if (result.access_token && result.user) {
-            localStorage.setItem("authToken", result.access_token);
-            localStorage.setItem("userId", result.user.id);
-            localStorage.setItem("userName", result.user.name);
-            localStorage.setItem("userRole", result.user.role);
+          localStorage.setItem("authToken", result.access_token);
+          localStorage.setItem("userId", result.user.id);
+          localStorage.setItem("userName", result.user.name);
+          localStorage.setItem("userRole", result.user.role);
 
-            setRole(result.user.role)
+          setRole(result.user.role);
         }
+
         navigate("/");
       } else {
         setApiResponse({ success: false, message: result.message || "Login failed" });
@@ -74,15 +82,15 @@ export default function LoginPage() {
           {errors.password && <p className="error">{errors.password.message}</p>}
         </div>
 
-        <button type="submit" className="login-button">
-          Login
-        </button>
+        <button type="submit" className="login-button">Login</button>
       </form>
 
-        <p 
-            onClick={() => navigate('/auth/register')}
-            style={{ color: '#00798fff', cursor: 'pointer', textDecoration: 'underline' }}
-        >Register vendor account</p>
+      <p
+        onClick={() => navigate("/auth/register")}
+        style={{ color: "#00798fff", cursor: "pointer", textDecoration: "underline" }}
+      >
+        Register vendor account
+      </p>
 
       {apiResponse && (
         <p style={{ color: apiResponse.success ? "green" : "red", marginTop: "10px" }}>

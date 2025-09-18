@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class RegistrationController extends Controller
 {
@@ -15,7 +16,7 @@ class RegistrationController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|unique:users,email',
-            'password' => 'required|string|min:6|confirmed', // password_confirmation field required
+            'password' => 'required|string|min:6|confirmed', // requires password_confirmation
         ]);
 
         // Create the user
@@ -25,6 +26,9 @@ class RegistrationController extends Controller
             'password' => Hash::make($request->password),
             'role' => 'vendor', // default role for new users
         ]);
+
+        // Make sure Sanctum session is initialized
+        Auth::login($user);
 
         // Generate token
         $token = $user->createToken('auth_token')->plainTextToken;
