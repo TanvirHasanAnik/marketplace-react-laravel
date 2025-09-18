@@ -4,7 +4,9 @@ import { createContext, useContext, useState } from "react";
 const RoleContext = createContext();
 
 export function RoleProvider({ children }) {
-  const [role, setRole] = useState("user"); // "user" | "vendor" | "admin"
+  const [role, setRole] = useState(() => {
+    return localStorage.getItem("userRole") || "user";
+  });
 
   return (
     <RoleContext.Provider value={{ role, setRole }}>

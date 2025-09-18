@@ -51,6 +51,20 @@ function TopBar() {
         <h3>Marketplace</h3>
       </div>
       <div style={{ marginRight: "15px", display: "flex", alignItems: "center", gap: "6px" }}>
+        <p>
+          <span style={{ fontWeight: "bold", color: "#FFFFFF" }}>
+            {localStorage.getItem("userName") || ""}
+          </span>
+          {localStorage.getItem("userRole") && (
+            <>
+              {" | "}
+              <span style={{ fontWeight: "bold", color: "#FFD700" }}>
+                {localStorage.getItem("userRole")}
+              </span>
+            </>
+          )}
+        </p>
+
         <button onClick={handleAuthClick}>
           {role === "admin" || role === "vendor" ? "Logout" : "Login"}
         </button>
