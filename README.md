@@ -1,3 +1,6 @@
+This repository has two folders, one for the backend and one for the frontend. 
+Each runs on a separate server, so both servers must be running simultaneously.
+
 Things needs to be in the device environment:
 1. PHP
 2. composer
