@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Api;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -28,10 +29,17 @@ class RegistrationController extends Controller
         // Generate token
         $token = $user->createToken('auth_token')->plainTextToken;
 
+        // Return token + user info
         return response()->json([
             'message' => 'User registered successfully',
             'access_token' => $token,
             'token_type' => 'Bearer',
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+            ]
         ], 201);
     }
 }

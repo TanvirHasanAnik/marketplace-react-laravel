@@ -42,6 +42,7 @@ export default function LoginPage() {
         if (result.access_token && result.user) {
             localStorage.setItem("authToken", result.access_token);
             localStorage.setItem("userId", result.user.id);
+            localStorage.setItem("userName", result.user.name);
             localStorage.setItem("userRole", result.user.role);
 
             setRole(result.user.role)

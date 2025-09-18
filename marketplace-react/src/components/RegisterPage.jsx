@@ -1,111 +1,109 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import * as z from "zod";
 import { useRole } from "../context/RoleContext";
 
+// Zod schema for validation
+const registerSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  password_confirmation: z.string().min(6, "Confirm password must be at least 6 characters"),
+}).refine((data) => data.password === data.password_confirmation, {
+  message: "Passwords do not match",
+  path: ["password_confirmation"],
+});
+
 export default function RegisterPage() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const { setRole } = useRole();
   const navigate = useNavigate();
+  const [apiResponse, setApiResponse] = useState(null);
 
-  const handleRegister = (e) => {
-    e.preventDefault();
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    resolver: zodResolver(registerSchema),
+  });
 
-    if (password !== confirmPassword) {
-      alert("Passwords do not match!");
-      return;
+  const onSubmit = async (data) => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setApiResponse({ success: true, message: "Registration successful!", data: result });
+        console.log("Success:", result);
+
+        if (result.access_token && result.user) {
+          localStorage.setItem("authToken", result.access_token);
+          localStorage.setItem("userId", result.user.id);
+          localStorage.setItem("userName", result.user.name);
+          localStorage.setItem("userRole", result.user.role);
+
+          setRole(result.user.role);
+        }
+
+        navigate("/");
+      } else {
+        setApiResponse({ success: false, message: result.message || "Registration failed" });
+        console.log("Error:", result);
+      }
+    } catch (error) {
+      setApiResponse({ success: false, message: "Something went wrong" });
+      console.error("Error:", error);
     }
-
-    // Dummy logic: decide role from email
-    let newRole = "user";
-    if (email.includes("vendor")) {
-      newRole = "vendor";
-    } else if (email.includes("admin")) {
-      newRole = "admin";
-    }
-
-    setRole(newRole);
-    localStorage.setItem("role", newRole);
-    localStorage.setItem("authToken", "dummy-token");
-
-    alert(`Registered as ${newRole}`);
-    navigate("/");
   };
 
   return (
-    <div style={styles.container}>
-      <h2>Register</h2>
-      <form onSubmit={handleRegister} style={styles.form}>
-        <input
-          type="text"
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-          style={styles.input}
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          style={styles.input}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          style={styles.input}
-        />
-        <input
-          type="password"
-          placeholder="Confirm Password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-          style={styles.input}
-        />
-        <button type="submit" style={styles.button}>Register</button>
+    <div className="login-container">
+      <h2 className="login-title">Register Vendor Account</h2>
+      <form onSubmit={handleSubmit(onSubmit)} className="login-form">
+        <div className="input-group">
+          <label>Name</label>
+          <input type="text" {...register("name")} className="input-field" />
+          {errors.name && <p className="error">{errors.name.message}</p>}
+        </div>
+
+        <div className="input-group">
+          <label>Email</label>
+          <input type="email" {...register("email")} className="input-field" />
+          {errors.email && <p className="error">{errors.email.message}</p>}
+        </div>
+
+        <div className="input-group">
+          <label>Password</label>
+          <input type="password" {...register("password")} className="input-field" />
+          {errors.password && <p className="error">{errors.password.message}</p>}
+        </div>
+
+        <div className="input-group">
+          <label>Confirm Password</label>
+          <input type="password" {...register("password_confirmation")} className="input-field" />
+          {errors.password_confirmation && <p className="error">{errors.password_confirmation.message}</p>}
+        </div>
+
+        <button type="submit" className="login-button">
+          Register
+        </button>
       </form>
+
+      <p 
+        onClick={() => navigate('/auth/login')}
+        style={{ color: '#00798fff', cursor: 'pointer', textDecoration: 'underline' }}
+      >
+        Already have an account? Login
+      </p>
+
+      {apiResponse && (
+        <p style={{ color: apiResponse.success ? "green" : "red", marginTop: "10px" }}>
+          {apiResponse.message}
+        </p>
+      )}
     </div>
   );
 }
-
-const styles = {
-  container: {
-    maxWidth: "400px",
-    margin: "80px auto",
-    padding: "25px",
-    border: "1px solid #ccc",
-    borderRadius: "8px",
-    background: "#fff",
-    textAlign: "center",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "12px",
-    marginTop: "20px",
-  },
-  input: {
-    padding: "10px",
-    fontSize: "15px",
-    border: "1px solid #ccc",
-    borderRadius: "5px",
-  },
-  button: {
-    padding: "10px",
-    fontSize: "16px",
-    backgroundColor: "#3a3a3aff",
-    color: "#fff",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-  },
-};
