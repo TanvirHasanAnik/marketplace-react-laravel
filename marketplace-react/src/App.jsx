@@ -9,11 +9,37 @@ function TopBar() {
   const { role, setRole } = useRole(); 
   const navigate = useNavigate();
 
-  const handleAuthClick = () => {
-    if (role === "admin" || role === "vendor") {
-      setRole("user"); 
-      localStorage.removeItem("authToken"); 
+  const handleAuthClick = async () => {
+  const authToken = localStorage.getItem("authToken");
+
+  if (authToken) {
+    const confirmLogout = window.confirm("Are you sure you want to logout?");
+    if (!confirmLogout) return; 
+    try {
+      const response = await fetch("/api/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${authToken}`,
+        },
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log(result.message); 
+      } else {
+        console.error("Logout failed");
+      }
+    } catch (error) {
+      console.error("Error during logout:", error);
+    } finally {
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("userId");
+      localStorage.removeItem("userRole");
+      localStorage.removeItem("userName");
+      setRole("user");
       navigate("/");
+    }
     } else {
       navigate("/auth/login");
     }
