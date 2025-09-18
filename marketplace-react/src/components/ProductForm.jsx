@@ -52,11 +52,11 @@ export default function ProductForm({ isEdit }) {
 
   // Fetch categories and subcategories
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/categories")
+    fetch("/api/categories")
       .then(res => res.json())
       .then(data => setCategories(data));
 
-    fetch("http://127.0.0.1:8000/api/subcategories")
+    fetch("/api/subcategories")
       .then(res => res.json())
       .then(data => setAllSubcategories(data));
   }, []);
@@ -71,7 +71,7 @@ export default function ProductForm({ isEdit }) {
   // Fetch product if editing
   useEffect(() => {
     if (isEdit && id) {
-      fetch(`http://127.0.0.1:8000/api/products/${id}`)
+      fetch(`/api/products/${id}`)
         .then(res => res.json())
         .then(data => {
           setValue("category_id", data.category_id || 0);
@@ -92,12 +92,15 @@ export default function ProductForm({ isEdit }) {
     const method = isEdit ? "PUT" : "POST";
     const url = isEdit ? `/api/products/${id}` : "/api/products";
 
+    const authToken = localStorage.getItem("authToken");
+    if (!authToken) return alert("You are not logged in.");
+
     const payload = new FormData();
     payload.append("name", formData.name);
     payload.append("description", formData.description || "");
     payload.append("price", formData.price);
     payload.append("stock", formData.stock);
-    payload.append("vendor_id", 1);
+    payload.append("vendor_id", 1); // adjust if needed
     payload.append("category_id", formData.category_id);
     if (formData.subcategory_id) payload.append("subcategory_id", formData.subcategory_id);
 
@@ -106,12 +109,20 @@ export default function ProductForm({ isEdit }) {
     }
 
     try {
-      const response = await fetch(url, { method, body: payload });
+      const response = await fetch(url, {
+        method,
+        body: payload,
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+
       if (response.ok) {
         alert(`Product ${isEdit ? "updated" : "added"} successfully!`);
         navigate("/manage");
       } else {
-        alert("Failed to save the product.");
+        const err = await response.json();
+        alert(err.message || "Failed to save the product.");
       }
     } catch (err) {
       console.error(err);

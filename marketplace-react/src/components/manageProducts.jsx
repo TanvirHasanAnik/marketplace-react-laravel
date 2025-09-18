@@ -7,23 +7,36 @@ export default function ManageProducts() {
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
 
+  const authToken = localStorage.getItem("authToken"); // get token
+
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/products?page=${page}`)
+    if (!authToken) return; // optional: redirect to login if not logged in
+
+    fetch(`/api/manage/products?page=${page}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+    })
       .then(res => res.json())
       .then(data => {
         setProducts(data.data || []);
         setPagination({ current: data.current_page, last: data.last_page });
         window.scrollTo({ top: 0, behavior: "auto" });
-      });
-  }, [page]);
+      })
+      .catch(err => console.error("Error fetching products:", err));
+  }, [page, authToken]);
 
   const handleDelete = async (product) => {
     const confirmed = window.confirm(`Are you sure you want to delete "${product.name}"?`);
     if (!confirmed) return;
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/products/${product.id}`, {
+      const response = await fetch(`/api/products/${product.id}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
       });
 
       if (response.ok) {
@@ -40,7 +53,7 @@ export default function ManageProducts() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "start" }}>
-      <p style={{ textAlign: "left" }}>Manage Products</p>
+      <p style={{ textAlign: "left", fontWeight: "bold", fontSize: "18px" }}>Manage Products</p>
       <button 
         style={{ marginBottom: "15px", color: "#1bac02ff" }}
         onClick={() => navigate("/manage/add")}
@@ -48,14 +61,15 @@ export default function ManageProducts() {
         Add New Product
       </button>
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
-        <thead>
-          <tr style={{ backgroundColor: "#696969ff" }}>
-            <th>ID</th><th>Name</th><th>Category</th><th>Subcategory</th>
-            <th>Price</th><th>Stock</th><th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {products.map(product => (
+      <thead>
+        <tr style={{ backgroundColor: "#696969ff" }}>
+          <th>ID</th><th>Name</th><th>Category</th><th>Subcategory</th>
+          <th>Price</th><th>Stock</th><th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {products.length > 0 ? (
+          products.map(product => (
             <tr key={product.id}>
               <td>{product.id}</td>
               <td>{product.name}</td>
@@ -64,16 +78,38 @@ export default function ManageProducts() {
               <td>${product.price}</td>
               <td>{product.stock}</td>
               <td>
-                <button onClick={() => navigate(`/manage/${product.id}`)} style={{ marginLeft: "5px", marginBottom:"5px",marginTop:"5px",color: '#0685d4ff' }}>View</button>
-                <button onClick={() => navigate(`/manage/edit/${product.id}`)} style={{ marginLeft: "5px", color: "orange" }}>Edit</button>
-                <button onClick={() => handleDelete(product)} style={{ marginLeft: "5px", color: "red" }}>Delete</button>
+                <button 
+                  onClick={() => navigate(`/manage/${product.id}`)} 
+                  style={{ marginLeft: "5px", marginTop: "5px", marginBottom: "5px", color: '#0685d4ff' }}
+                >
+                  View
+                </button>
+                <button 
+                  onClick={() => navigate(`/manage/edit/${product.id}`)} 
+                  style={{ marginLeft: "5px", color: "orange" }}
+                >
+                  Edit
+                </button>
+                <button 
+                  onClick={() => handleDelete(product)} 
+                  style={{ marginLeft: "5px", color: "red" }}
+                >
+                  Delete
+                </button>
               </td>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          ))
+        ) : (
+          <tr>
+            <td colSpan={7} style={{ textAlign: "center", padding: "20px", color: "gray" }}>
+              You have no products posted, you can add a new product.
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </table>
 
-      <div className="pagination">
+      <div className="pagination" style={{ marginTop: "15px" }}>
         <button 
           onClick={() => setPage(p => Math.max(p - 1, 1))}
           disabled={pagination.current === 1}

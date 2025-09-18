@@ -24,5 +24,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/products', [ProductController::class, 'store']);
     Route::put('/products/{id}', [ProductController::class, 'update']);
     Route::delete('/products/{id}', [ProductController::class, 'destroy']);
-});
 
+    // Manage page products: vendor sees own, admin sees all
+    Route::get('/manage/products', [ProductController::class, 'manageIndex']);
+});
