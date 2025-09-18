@@ -1,7 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import * as z from "zod";
+import { useRole } from "../context/RoleContext";
 
 // Zod schema for validation
 const loginSchema = z.object({
@@ -10,7 +12,9 @@ const loginSchema = z.object({
 });
 
 export default function LoginPage() {
-  const [apiResponse, setApiResponse] = useState(null); // store API response
+  const { setRole } = useRole();
+  const navigate = useNavigate();
+  const [apiResponse, setApiResponse] = useState(null); 
   const {
     register,
     handleSubmit,
@@ -26,7 +30,7 @@ export default function LoginPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data), // send email and password as JSON
+        body: JSON.stringify(data), 
       });
 
       const result = await response.json();
@@ -34,7 +38,15 @@ export default function LoginPage() {
       if (response.ok) {
         setApiResponse({ success: true, message: "Login successful!", data: result });
         console.log("Success:", result);
-        // Here you can store token or user data in localStorage or context
+
+        if (result.access_token && result.user) {
+            localStorage.setItem("authToken", result.access_token);
+            localStorage.setItem("userId", result.user.id);
+            localStorage.setItem("userRole", result.user.role);
+
+            setRole(result.user.role)
+        }
+        navigate("/");
       } else {
         setApiResponse({ success: false, message: result.message || "Login failed" });
         console.log("Error:", result);
@@ -65,6 +77,11 @@ export default function LoginPage() {
           Login
         </button>
       </form>
+
+        <p 
+            onClick={() => navigate('/auth/register')}
+            style={{ color: '#00798fff', cursor: 'pointer', textDecoration: 'underline' }}
+        >Register vendor account</p>
 
       {apiResponse && (
         <p style={{ color: apiResponse.success ? "green" : "red", marginTop: "10px" }}>
