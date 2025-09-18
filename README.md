@@ -18,3 +18,8 @@ Things needs to be in the device environment:
 *For marketplace-react folder terminal
 1. npm install
 2. npm run dev
+
+
+Admin login fron login page credential:
+email: admin@example.com
+password: "password123"
